@@ -36,9 +36,9 @@ covid_id_daily %<>%
     select(Date, ends_with('day') & ! starts_with('treatment')) %>%
     slice(-1) %>%
     rename(date = Date,
-           new = New_case_per_day,
-           recovered = `Recovered-cases_perDay`,
-           death = Death_cases_perDay) %>%
+           New = New_case_per_day,
+           Recovered = `Recovered-cases_perDay`,
+           Death = Death_cases_perDay) %>%
     mutate(date = ymd(date))
 
 # Add the following features:
@@ -51,7 +51,7 @@ covid_id_daily %<>%
 
 # Convert covid_id_daily to long format
 covid_id_daily %<>%
-    pivot_longer(cols = new:death, names_to = 'case', values_to = 'totals') %>%
+    pivot_longer(cols = New:Death, names_to = 'case', values_to = 'totals') %>%
     mutate(case = as.factor(case))
 
 # Provincial COVID-19 data
@@ -65,18 +65,24 @@ covid_id_daily %<>%
 covid_id_province %<>%
     select(Province_name, ends_with('cases')) %>%
     rename(province = Province_name,
-           confirmed = Confirmed_cases,
-           recovered = Recovered_cases,
-           death = Death_cases)
+           Confirmed = Confirmed_cases,
+           Recovered = Recovered_cases,
+           Death = Death_cases)
 
 # Add feature 'grand_total' which is just the sum of the case columns. This
 # feature is simply used for the purposes of properly ordering provinces based
 # on the total number of cases
-covid_id_province %<>% mutate(grand_total = confirmed + recovered + death)
+covid_id_province %<>% mutate(grand_total = Confirmed + Recovered + Death)
 
 # Convert covid_id_province to long format
 covid_id_province %<>%
-    pivot_longer(cols = confirmed:death,
+    pivot_longer(cols = Confirmed:Death,
                  names_to = 'case',
                  values_to = 'totals') %>%
     mutate(case = as.factor(case))
+
+#=========
+# Clean up
+#=========
+
+rm(urls)

@@ -1,2 +1,5 @@
+# Ignore R artifacts
+.R*
+
 # Ignore csv files in root directory
 /*.csv
